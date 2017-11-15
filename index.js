@@ -9,7 +9,7 @@ const content = Promise.all(pages.map(async ({ en }) => {
 
 	console.log(`Cleaning article ${en}`);
 
-	return [en, pipeline(await corpusPage.summary())];
+	return [en, removeParenthesis(await corpusPage.summary())];
 })).then(result => result.reduce((map, [k, v]) => {
 	map[k] = v;
 
@@ -17,14 +17,6 @@ const content = Promise.all(pages.map(async ({ en }) => {
 }, {}));
 
 content.then(content => fs.writeFile("./data/corpus.json", JSON.stringify(content)));
-
-function pipeline (content) {
-	return tokenize(removeParenthesis(content));
-}
-
-function tokenize(content) {
-	return content.split(/\s+/).filter(token => token !== "");
-}
 
 function removeParenthesis (content) {
 	const stack = [];
